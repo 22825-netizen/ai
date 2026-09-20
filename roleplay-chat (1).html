@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ห้องสมมติ · คุยกับเอไอ</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff5fa;--card:#fff;--ink:#3b2f3f;--mut:#8b7a91;--pri:#e8739c;--pri2:#9b6fe0;--line:#f1dce8;--me:#ffe3ef;--th:#8f7f9b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1622;--card:#271f30;--ink:#f3e9f6;--mut:#a698ae;--pri:#f38ab0;--pri2:#b99cf2;--line:#3a2f45;--me:#4a2b3e;--th:#b5a6c0}}
+:root[data-theme="dark"]{--bg:#1c1622;--card:#271f30;--ink:#f3e9f6;--mut:#a698ae;--pri:#f38ab0;--pri2:#b99cf2;--line:#3a2f45;--me:#4a2b3e;--th:#b5a6c0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{font-family:'Kanit',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;overscroll-behavior:none}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:8px 12px;background:var(--line);color:var(--ink)}
+button:disabled{opacity:.5;cursor:not-allowed}
+button.p{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff}
+button.d{background:#f4c6c6;color:#7a1f1f}
+textarea,input,select{width:100%;font:inherit;border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--bg);color:var(--ink)}
+textarea{resize:vertical}
+#app{display:flex;height:100%}
+aside{width:270px;background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:14px;gap:10px;z-index:5}
+.logo{font-size:21px;font-weight:500;color:var(--pri)}
+#rooms{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.room{padding:10px 12px;border-radius:14px;cursor:pointer;border:1px solid transparent}
+.room.on{background:var(--me);border-color:var(--pri)}
+.mut{color:var(--mut);font-size:12px}
+main{flex:1;display:flex;flex-direction:column;min-width:0}
+header{display:flex;align-items:center;gap:6px;padding:10px 12px;background:var(--card);border-bottom:1px solid var(--line)}
+header h1{flex:1;font-size:17px;font-weight:500;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.menu{display:none}
+#chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;background:linear-gradient(180deg,var(--bg),var(--bg))}
+.note{background:var(--card);border:1px dashed var(--pri);border-radius:14px;padding:10px 14px;font-size:13px;color:var(--mut);white-space:pre-wrap}
+.msg{display:flex;flex-direction:column;gap:4px;max-width:90%}
+.msg.me{align-self:flex-end;align-items:flex-end}
+.hd{display:flex;align-items:center;gap:8px}
+.msg.me .hd{flex-direction:row-reverse}
+.av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:22px;flex:none;box-shadow:0 2px 6px #0002}
+.bub{background:var(--card);border:1px solid var(--line);border-radius:4px 18px 18px 18px;padding:9px 13px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}
+.me .bub{background:var(--me);border-radius:18px 4px 18px 18px}
+.nm{font-size:12px;color:var(--mut);margin-bottom:2px}
+.me .nm{text-align:right}
+.act{font-style:italic;color:var(--pri2)}
+.th{color:var(--th);font-size:.93em}
+#bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:8px 12px 0;background:var(--card);border-top:1px solid var(--line)}
+#chips{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px 0;background:var(--card)}
+.chip{border:2px solid var(--line);border-radius:20px;padding:4px 10px;background:var(--bg)}
+.chip.on{border-color:var(--pri);background:var(--me)}
+#composer{display:flex;gap:8px;align-items:flex-end;padding:8px 12px 12px;background:var(--card)}
+#inp{max-height:160px}
+.chip{position:relative;display:inline-flex;align-items:center;gap:5px;padding-bottom:11px}
+.mi{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;flex:none}
+.hb{position:absolute;left:10px;right:10px;bottom:3px;height:4px;border-radius:3px;background:var(--line);overflow:hidden}
+.hb b{display:block;height:100%;transition:width .6s}
+.chip em{font-style:normal;font-size:12px;font-weight:500}
+.chip.up em{color:#2a9d5c}.chip.down em{color:#e5484d}
+.chip.down{animation:sh .5s}
+@keyframes sh{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+#bond{padding:8px 14px;background:var(--card);border-bottom:1px solid var(--line)}
+.bt{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:13px}
+.bt .lk{opacity:.5}
+.pb{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin:5px 0 3px}
+.pb i{display:block;height:100%;background:linear-gradient(90deg,var(--pri),var(--pri2));transition:width .6s}
+.evb{align-self:center;text-align:center;background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border-radius:16px;padding:10px 18px;white-space:pre-wrap;max-width:92%;font-size:14px}
+.inner{font-size:13px;font-style:italic;color:var(--th);padding-left:6px}
+#bar select{width:auto}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:20px;z-index:20;max-width:90%}
+#ed{position:fixed;inset:0;background:#0007;z-index:10;display:flex;justify-content:center;align-items:flex-start;padding:calc(env(safe-area-inset-top,0px) + 12px) 12px 12px;overflow-y:auto}
+#ed>div{background:var(--card);border-radius:20px;padding:18px;width:100%;max-width:560px;display:flex;flex-direction:column;gap:10px}
+#ed label{display:block;font-size:13px;color:var(--mut)}
+#ed h4{margin:8px 0 0;color:var(--pri)}
+details{border:1px solid var(--line);border-radius:14px;padding:8px 10px}
+summary{cursor:pointer;font-weight:500}
+.row{display:flex;gap:8px}.row>*{flex:1}
+@media (max-width:720px){
+aside{position:fixed;top:0;bottom:0;left:0;padding-top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-105%);transition:transform .2s;box-shadow:4px 0 20px #0004}
+aside.open{transform:none}
+.menu{display:inline-block}}
+</style>
+</head>
+<body>
+<div id="app">
+<aside id="side">
+  <div class="logo">🎭 ห้องสมมติ</div>
+  <button class="p" id="newRoom">＋ สร้างสถานการณ์ใหม่</button>
+  <div id="rooms"></div>
+  <div class="mut">คุยได้ไม่จำกัดข้อความ · บันทึกในเบราว์เซอร์อัตโนมัติ</div>
+</aside>
+<main>
+  <header>
+    <button class="menu" id="menu">☰</button>
+    <h1 id="title"></h1>
+    <button id="undo" title="ลบข้อความล่าสุด">↩</button>
+    <button id="regen" title="ให้ตอบใหม่">🔁</button>
+    <button id="clear" title="ล้างแชท">🧹</button>
+    <button id="bsoc" title="ส่องโซเชียลของเอไอ (ปลดล็อกที่ 90)">📱</button>
+    <button id="edit" title="แก้ไขสถานการณ์/ตัวละคร">⚙️</button>
+    <button id="theme" title="โหมดมืด/สว่าง">🌙</button>
+  </header>
+  <div id="bond"></div>
+  <div id="chat"></div>
+  <div id="chips"></div>
+  <div id="bar">
+    <button id="talk">🎭 ให้เอไอคุยกันเอง</button>
+    <select id="turns" title="จำนวนประโยค"><option value="2">2 ประโยค</option><option value="4" selected>4 ประโยค</option><option value="8">8 ประโยค</option><option value="12">12 ประโยค</option></select>
+    <button id="stop" class="d" hidden>⏹ หยุด</button>
+    <select id="tier" title="ความเร็ว"><option value="quick">⚡ เร็ว</option><option value="default">🧠 ฉลาดขึ้น (ช้ากว่า)</option></select>
+  </div>
+  <div id="bar" style="border:0;padding-top:6px">
+    <button id="bThink">💭 คิดในใจ</button><button id="bAct">✋ การกระทำ</button>
+    <span class="mut">(คิดในใจ) &nbsp; **การกระทำ** &nbsp; ส่ง: Ctrl+Enter</span>
+  </div>
+  <div id="composer">
+    <textarea id="inp" rows="2" placeholder="พิมพ์ได้เลย ไม่จำกัดความยาว… เช่น สวัสดีมิ้นท์ (ทำไมวันนี้เงียบจัง) **นั่งลงข้างๆ**"></textarea>
+    <button class="p" id="send">ส่ง ✨</button>
+  </div>
+</main>
+</div>
+<div id="ed" hidden><div>
+  <div id="edbody"></div>
+  <button class="p" id="edclose">เสร็จแล้ว ✔</button>
+</div></div>
+<div id="toast" hidden></div>
+
+<script>
+const $=s=>document.querySelector(s), uid=()=>Math.random().toString(36).slice(2,9);
+const esc=t=>String(t??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const ea=t=>esc(t).replace(/"/g,'&quot;');
+const fmt=t=>esc(t).replace(/\*\*([\s\S]+?)\*\*/g,'<span class="act">$1</span>').replace(/\(([\s\S]+?)\)/g,'<span class="th">($1)</span>');
+const KEY='roleplay-rooms-v1';
+let S,sample=null,busy=false,ctl=null,stopFlag=false,pendEv=false;const flash={};
+
+const mkChar=o=>({id:uid(),name:'ตัวละครใหม่',emoji:'🙂',color:'#ffc2da',persona:'',style:'',habits:'',img:'',relation:'',feel:'',aff:30,posts:[],...o});
+const mkRoom=o=>{const r={id:uid(),name:'สถานการณ์ใหม่',setting:'',me:{name:'ฉัน',emoji:'😊',profile:'',img:''},chars:[mkChar()],msgs:[],bond:0,...o};r.sel=[r.chars[0].id];r.main=r.chars[0].id;return r};
+function seed(){
+  const a=mkRoom({name:'🏠 อยู่บ้านกับน้องสาว',setting:'เย็นวันเสาร์ที่บ้าน พ่อแม่ไปทำงานต่างจังหวัด เหลือแค่พี่กับน้องสองคน ฝนกำลังตก',
+    me:{name:'พี่',emoji:'😎',profile:'พี่ชาย/พี่สาว ม.3 ใจดีแต่ชอบแกล้งน้อง'},
+    chars:[mkChar({name:'น้องมิ้นท์',emoji:'🐰',color:'#ffb3d1',persona:'น้องสาววัย 11 ปี ร่าเริง ขี้อ้อน ชอบดูการ์ตูน ปากไวนิดหน่อย',style:'พูดน่ารัก เรียกพี่ว่า "พี่~" ลงท้ายด้วย นะ/ค่ะ',habits:'ชอบกอดหมอนข้าง ขอขนมบ่อยๆ'})]});
+  const b=mkRoom({name:'💼 ทำงานกับเพื่อนสนิท',setting:'ห้องทำโปรเจกต์ของโรงเรียน ส่งงานพรุ่งนี้เช้า แต่ยังเสร็จไม่ถึงครึ่ง',
+    me:{name:'ฉัน',emoji:'🎧',profile:'คนที่รับผิดชอบส่วนโค้ดของโปรเจกต์'},
+    chars:[mkChar({name:'ตอง',emoji:'🦊',color:'#ffd9a0',persona:'เพื่อนสนิท ตลก ขี้เล่น ชอบเลื่อนงาน แต่พึ่งพาได้ตอนคับขัน',style:'พูดกันเอง เรียกฉันว่า "แก" หรือ "เพื่อน"',habits:'ชอบกินขนมระหว่างทำงาน'}),
+           mkChar({name:'ฟ้า',emoji:'🌸',color:'#c9c2ff',persona:'เพื่อนในกลุ่ม เรียบร้อย จัดระเบียบเก่ง กังวลเรื่องเวลา',style:'สุภาพ พูดช้าๆ',habits:'จดตารางงานตลอด'})]});
+  return {rooms:[a,b],cur:a.id,tier:'quick'};
+}
+function load(){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}if(!S||!S.rooms||!S.rooms.length)S=seed();S.rooms.forEach(fix)}
+function fix(r){r.bond=r.bond||0;r.me.img=r.me.img||'';r.chars.forEach(c=>{c.img=c.img||'';c.relation=c.relation||'';c.feel=c.feel||'';if(typeof c.aff!=='number')c.aff=30;c.posts=c.posts||[]});if(!cOf(r,r.main))r.main=r.chars[0].id}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const cur=()=>S.rooms.find(r=>r.id===S.cur)||S.rooms[0];
+const cOf=(r,id)=>r.chars.find(c=>c.id===id);
+
+function toast(t){const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,3200)}
+function ui(){$('#send').disabled=$('#talk').disabled=busy;$('#stop').hidden=!busy}
+function render(){
+  const r=cur();S.cur=r.id;
+  $('#rooms').innerHTML=S.rooms.map(x=>`<div class="room ${x.id===r.id?'on':''}" data-id="${x.id}"><b>${esc(x.name)}</b><div class="mut">${x.chars.length} ตัวละคร · ${x.msgs.length} ข้อความ</div></div>`).join('');
+  $('#title').textContent=r.name;$('#tier').value=S.tier||'quick';
+  renderBond();renderChat();renderChips();ui();
+}
+const av=(c,k='av')=>`<div class="${k}" style="background:${c.img?`url(${ea(c.img)}) center/cover`:ea(c.color)}">${c.img?'':esc(c.emoji)}</div>`;
+function bubble(m,r){
+  if(m.role==='ev')return `<div class="evb">${esc(m.text)}</div>`;
+  if(m.role==='me')return `<div class="msg me"><div class="hd">${av({...r.me,color:'var(--me)'})}<span class="nm">${esc(r.me.name)}</span></div><div class="bub">${fmt(m.text)}</div></div>`;
+  const c=cOf(r,m.cid)||{name:'?',emoji:'❔',color:'#ddd'};
+  return `<div class="msg"><div class="hd">${av(c)}<span class="nm">${esc(c.name)}${c.id===r.main?' ⭐':''}</span></div><div class="bub">${fmt(m.text)}</div>${m.inner&&r.bond>=60?`<div class="inner">💭 ${esc(m.inner)}</div>`:''}</div>`;
+}
+function renderChat(){
+  const r=cur();
+  $('#chat').innerHTML=(r.setting?`<div class="note">🎬 ฉาก: ${esc(r.setting)}</div>`:'')+
+    (r.msgs.length?'':`<div class="note">เริ่มพิมพ์ได้เลย! เลือกตัวละครด้านล่างว่าจะให้ใครตอบ 💬<br>(วงเล็บ) = คิดในใจ · **ดอกจันสองตัว** = การกระทำ</div>`)+
+    r.msgs.map(m=>bubble(m,r)).join('');
+  scroll();
+}
+const scroll=()=>{const c=$('#chat');c.scrollTop=c.scrollHeight};
+function renderChips(){
+  const r=cur();r.sel=r.sel.filter(id=>cOf(r,id));
+  const all=r.sel.length===r.chars.length;
+  $('#chips').innerHTML=`<button class="chip ${all?'on':''}" data-id="*">👥 ทุกตัว</button>`+
+    r.chars.map(c=>{const f=flash[c.id];return `<button class="chip ${r.sel.includes(c.id)?'on':''} ${f>0?'up':f<0?'down':''}" data-id="${c.id}" title="ความชอบ ${c.aff}/100">${av(c,'mi')}${c.id===r.main?'⭐':''}${esc(c.name)}${f?`<em>${f>0?'+'+f:f}</em>`:''}<i class="hb"><b style="width:${c.aff}%;background:${c.aff<25?'#e5484d':'var(--pri)'}"></b></i></button>`}).join('');
+}
+
+/* ---------- AI ---------- */
+function hist(r){
+  const out=[];let n=0;
+  for(let i=r.msgs.length-1;i>=0;i--){
+    const m=r.msgs[i];if(!m.text)continue;
+    const nm=m.role==='ev'?'เหตุการณ์พิเศษ':m.role==='me'?r.me.name:(cOf(r,m.cid)||{name:'?'}).name;
+    const l=`[${nm}] ${m.text}`;n+=l.length*3;if(n>42000)break;out.unshift(l);
+  }
+  return out.join('\n');
+}
+function prompt(r,c,auto){
+  const others=r.chars.filter(x=>x.id!==c.id).map(x=>`- ${x.name}: ${x.persona||'-'} | สไตล์พูด: ${x.style||'-'} | นิสัย/การกระทำ: ${x.habits||'-'}`).join('\n')||'(ไม่มี)';
+  return `คุณกำลังเล่นบทบาทสมมติ (roleplay) ในฉากที่ผู้ใช้สร้างขึ้น ตอนนี้คุณรับบทเป็น "${c.name}"
+
+[ฉาก/เหตุการณ์]
+${r.setting||'(ไม่ได้ระบุ)'}
+
+[ตัวละครของคุณ: ${c.name}]
+บุคลิก: ${c.persona||'-'}
+สไตล์การพูด: ${c.style||'-'}
+นิสัย/การกระทำที่มักทำ: ${c.habits||'-'}
+
+[ผู้ใช้เล่นเป็น: ${r.me.name}]
+${r.me.profile||'-'}
+
+[ความสัมพันธ์ของ ${c.name}]
+${rel(r,c)}
+
+[ตัวละครอื่นในฉาก]
+${others}
+
+[กติกา]
+- ข้อความของ ${r.me.name}: ข้อความใน (วงเล็บ) คือความคิดในใจที่ตัวละครอื่นไม่ได้ยินและไม่รู้ ห้ามแสดงว่ารู้ / ข้อความใน **ดอกจันสองตัว** คือการกระทำ / ข้อความอื่นคือคำพูด
+- ตอบเป็น ${c.name} คนเดียวเท่านั้น ห้ามพูดหรือทำแทน ${r.me.name} หรือตัวละครอื่น
+- การกระทำเขียนใน **ดอกจันสองตัว** คำพูดเขียนตรงๆ ไม่ต้องใส่ชื่อนำหน้า และห้ามใส่ความคิดในวงเล็บในส่วนคำตอบ
+- อยู่ในคาแรกเตอร์ตลอด ตอบเป็นภาษาไทย กระชับ 1-4 ประโยค (ยาวกว่านี้ได้ถ้าสถานการณ์ต้องการ)
+- เนื้อหาต้องเหมาะสมกับวัยรุ่น อบอุ่น ไม่รุนแรง ไม่มีเนื้อหาทางเพศ
+
+[บทสนทนาที่ผ่านมา]
+${hist(r)||'(ยังไม่มี)'}
+
+${tail(r,c,auto)}`;
+}
+const AFF=a=>a<20?'เย็นชา ระแวง พูดห้วน':a<45?'ยังไม่ไว้ใจ สุภาพแต่เว้นระยะ':a<70?'เป็นมิตร':a<90?'สนิทและไว้ใจ':'รักและผูกพันมาก';
+function rel(r,c){
+  const main=c.id===r.main,b=r.bond,me=r.me.name;
+  let s=`${c.name} เป็น: ${c.relation||'-'} ของ ${me} | ความรู้สึกที่มีต่อ ${me}: ${c.feel||'-'}\nระดับความชอบตอนนี้ ${c.aff}/100 → ${AFF(c.aff)} (แสดงท่าทีให้สอดคล้อง)\n`;
+  s+=main?`${c.name} เป็นตัวหลักของเรื่อง`:`${c.name} เป็นตัวรอง มาเสริมให้เรื่องสนุกขึ้น`;
+  if(main&&b>=30)s+=` — อยากคุยกับ ${me} มากขึ้น ชวนคุย ถามต่อ เล่าเรื่องตัวเองบ่อยๆ`;
+  if(main&&b>=120)s+=` — รักและผูกพันกับ ${me} มาก แสดงออกอย่างอบอุ่นแบบที่เข้ากับความสัมพันธ์ที่ตั้งไว้ (เช่น ครอบครัว เพื่อนสนิท) ไม่ใช่แนวคู่รักหรือทางเพศ`;
+  return s}
+const tail=(r,c,mode)=>`${mode==='ev'?`เพิ่งเกิด "เหตุการณ์พิเศษ" ล่าสุดตามบทสนทนาข้างบน ให้ ${c.name} แสดงบทตามเหตุการณ์นั้นอย่างเป็นธรรมชาติ`:mode?`${r.me.name} ไม่ได้พิมพ์เพิ่ม ให้ ${c.name} พูด/ทำต่อจากเหตุการณ์ล่าสุด โต้ตอบกับตัวละครอื่นหรือเดินเรื่องต่อ`:`ตอนนี้ถึงตา ${c.name} ตอบ`}
+เขียนเฉพาะสิ่งที่ ${c.name} พูดหรือทำ แล้วปิดท้ายด้วยบรรทัดเหล่านี้เสมอ:
+##ใจ: ความคิดในใจจริงๆ ของ ${c.name} 1 ประโยค${mode?'':`
+##ชอบ: ตัวเลขจำนวนเต็ม = ประเมินสิ่งที่ ${r.me.name} เพิ่งพูด/ทำ ตามนิสัย ${c.name}: ทำดี/น่ารัก +1 ถึง +3 (เพิ่มทีละนิด) เฉยๆ 0 ไม่ดี/หยาบคาย/ทำให้เสียใจ -8 ถึง -30 (ยิ่งแรงยิ่งลดเยอะ)`}`;
+function parse(t,c){
+  const i=t.indexOf('##'),rest=i<0?'':t.slice(i).replace(/−/g,'-'),a=rest.match(/##\s*ใจ\s*[:：]\s*([^\n#]*)/),b=rest.match(/##\s*ชอบ\s*[:：]\s*([+-]?\d+)/);
+  return {text:clean((i<0?t:t.slice(0,i)).trim(),c),inner:a?a[1].trim():'',d:b?parseInt(b[1]):0}}
+const clean=(t,c)=>t.replace(/^\s*\[[^\]\n]{1,30}\]\s*/,'').replace(new RegExp('^\\s*'+c.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\s*[:：]\\s*'),'');
+const EM={not_granted:'ต้องกดอนุญาตให้หน้านี้ใช้ Claude ก่อนนะ',rate_limited:'ใช้ถี่เกินไปหรือโควต้าเต็ม ลองใหม่ทีหลังนะ',session_expired:'ต้องล็อกอิน Claude ใหม่',prompt_too_large:'แชทยาวเกินไป ลองล้างแชทบางส่วน',sampling_disabled:'บัญชีนี้ใช้ Claude ในหน้านี้ไม่ได้'};
+
+async function gen(cid,auto,re){
+  const r=cur(),c=cOf(r,cid);if(!c)return false;
+  const m={id:uid(),role:'ai',cid,text:''};
+  const p=prompt(r,c,auto);
+  r.msgs.push(m);renderChat();
+  const el=$('#chat').lastElementChild.querySelector('.bub');el.textContent='กำลังคิด… 💭';
+  ctl=new AbortController();let ok=true,pr=null;
+  try{
+    const res=await sample(p,{cache:false,signal:ctl.signal,modelTier:S.tier||'quick',onText:({text})=>{m.text=parse(text,c).text;el.innerHTML=fmt(m.text);scroll()}});
+    pr=parse(res.text,c);m.text=pr.text;
+  }catch(e){
+    ok=false;if(e&&e.text)m.text=parse(e.text,c).text;
+    if(!e||e.code!=='cancelled')toast(EM[e&&e.code]||'เชื่อมต่อไม่ได้ ลองอีกครั้งนะ');
+  }
+  if(!m.text.trim())r.msgs=r.msgs.filter(x=>x!==m);
+  else if(pr){m.inner=pr.inner;if(!auto&&!re){applyAff(c,pr.d);if(c.id===r.main)addBond(2)}}
+  save();render();return ok;
+}
+async function run(ids,auto,re){
+  if(!sample){toast('ต้องเปิดหน้านี้ผ่าน Claude ถึงจะคุยกับเอไอได้');return}
+  busy=true;stopFlag=false;ui();
+  for(const id of ids){if(stopFlag||!(await gen(id,auto,re)))break}
+  if(pendEv&&!stopFlag){pendEv=false;await gen(cur().main,'ev')}
+  pendEv=false;busy=false;ui();
+}
+function targets(){const r=cur();return r.chars.filter(c=>r.sel.includes(c.id)).map(c=>c.id)}
+async function send(){
+  if(busy)return;const r=cur(),t=$('#inp').value.trim(),ids=targets();
+  if(!ids.length){toast('เลือกตัวละครที่จะให้ตอบก่อนนะ');return}
+  if(t){r.msgs.push({id:uid(),role:'me',text:t});$('#inp').value='';$('#inp').style.height='';save();render()}
+  await run(ids,!t);
+}
+async function talk(){
+  if(busy)return;const r=cur(),n=+$('#turns').value;
+  let pool=targets();if(!pool.length)pool=r.chars.map(c=>c.id);
+  const last=[...r.msgs].reverse().find(m=>m.role==='ai');
+  let i=last?pool.indexOf(last.cid):-1;const ids=[];
+  for(let k=0;k<n;k++){i=(i+1)%pool.length;ids.push(pool[i])}
+  await run(ids,true);
+}
+
+/* ---------- bond / affection / social ---------- */
+const EV=[
+['🗣️ {m} เริ่มอยากคุยกับคุณมากขึ้น','{m} เริ่มชวนคุยและเล่าเรื่องของตัวเองให้ฟังบ่อยขึ้น'],
+['💭 ปลดล็อก: อ่านใจเอไอ','{m} เริ่มไว้ใจมากขึ้นจนเผลอเปิดใจ (ดูความคิดในใจของเอไอได้แล้ว)'],
+['📱 ปลดล็อก: ส่องโซเชียล','{m} เผลอลืมปิดโซเชียลไว้ (กดปุ่ม 📱 ด้านบนเพื่อส่องได้แล้ว)'],
+['💗 ผูกพันและรักคุณ','{m} รู้สึกว่าคุณสำคัญมาก และแสดงความรักความผูกพันแบบที่เข้ากับความสัมพันธ์ของคุณสองคน'],
+['🎁 ของขวัญเซอร์ไพรส์','{m} แอบเตรียมของขวัญชิ้นเล็กๆ มาให้คุณ'],
+['🌧️ คืนที่เปิดใจ','{m} เล่าความลับที่ไม่เคยบอกใคร'],
+['🎵 เพลงของเรา','{m} ชวนฟังหรือร้องเพลงด้วยกัน'],
+['🍜 วันออกไปเที่ยว','{m} ชวนออกไปกินของอร่อยและเดินเล่นด้วยกัน'],
+['😤 เข้าใจผิดเล็กๆ','เกิดความเข้าใจผิดเบาๆ ระหว่างคุณกับ {m} แล้วต้องคืนดีกัน'],
+['📸 อัลบั้มความทรงจำ','{m} ชวนเปิดดูรูปเก่าและถ่ายรูปใหม่ด้วยกัน'],
+['🏆 ภารกิจร่วมกัน','{m} ชวนทำภารกิจท้าทายด้วยกัน'],
+['🌙 คืนดูดาว','{m} ชวนนั่งดูดาวและคุยเรื่องความฝัน'],
+['💌 จดหมายจากใจ','{m} เขียนจดหมายขอบคุณมาให้คุณ'],
+['🎂 วันพิเศษ','{m} จัดเซอร์ไพรส์วันพิเศษให้คุณ'],
+['🤝 คำสัญญา','{m} ขอสัญญาว่าจะอยู่ข้างกันเสมอ'],
+['🔥 ช่วยกันฝ่าวิกฤต','เกิดปัญหาใหญ่ และ {m} เข้ามาช่วยคุณสุดตัว'],
+['📖 ไดอารี่ลับ','{m} เผลอให้คุณเห็นไดอารี่ลับที่เขียนถึงคุณ'],
+['🌈 ความฝันของเรา','{m} คุยกับคุณเรื่องอนาคตที่อยากไปด้วยกัน'],
+['🎬 คืนย้อนความหลัง','{m} ชวนย้อนดูเรื่องราวทั้งหมดที่ผ่านมา'],
+['👑 ความสัมพันธ์สูงสุด','{m} บอกว่าคุณคือคนสำคัญที่สุด ปลดล็อกครบทุกเหตุการณ์แล้ว!']];
+function addBond(n){
+  const r=cur(),o=r.bond,mn=(cOf(r,r.main)||{}).name;r.bond=Math.min(600,o+n);
+  for(let k=Math.floor(o/30)+1;k<=Math.floor(r.bond/30);k++){const e=EV[k-1];r.msgs.push({id:uid(),role:'ev',text:`✨ เหตุการณ์! (${k*30}) ${e[0]}\n${e[1]}`.replace(/\{m\}/g,mn)});pendEv=true}}
+function applyAff(c,d){
+  d=d>0?Math.min(d,3):Math.max(d,-30);if(!d)return;
+  c.aff=Math.max(0,Math.min(100,c.aff+d));flash[c.id]=d;
+  setTimeout(()=>{delete flash[c.id];renderChips()},2200);
+  if(d<=-15)toast(`💔 ${c.name} เสียใจมาก ${d}`)}
+function renderBond(){
+  const r=cur(),b=r.bond,nx=Math.min(600,(Math.floor(b/30)+1)*30);
+  $('#bond').innerHTML=`<div class="bt"><b>💞 ความสัมพันธ์ ${b}/600${b>=600?' 👑 MAX':''}</b><span>${[[30,'🗣️'],[60,'💭'],[90,'📱'],[120,'💗']].map(([n,i])=>`<span class="${b>=n?'':'lk'}" title="ปลดล็อกที่ ${n}">${b>=n?i:'🔒'}${n}</span>`).join(' ')}</span></div><div class="pb"><i style="width:${b/6}%"></i></div><div class="mut">${b>=600?'ครบทุกเหตุการณ์แล้ว 🎉':`เหตุการณ์ถัดไปที่ ${nx} · คุยกับ ${esc((cOf(r,r.main)||{}).name)} เพื่อเพิ่ม (+2 ต่อครั้ง)`}</div>`}
+function shrink(f,cb){const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const z=160,cv=document.createElement('canvas');cv.width=cv.height=z;const m=Math.min(im.width,im.height);cv.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,z,z);cb(cv.toDataURL('image/jpeg',.85))};im.src=rd.result};rd.readAsDataURL(f)}
+const openC=id=>{const e=$('#edbody [data-c="'+id+'"]');if(e)e.closest('details').open=true};
+function soc(id){
+  const r=cur(),c=cOf(r,id)||cOf(r,r.main);soc.id=c.id;
+  $('#edbody').innerHTML=`<h3 style="margin:0">📱 โซเชียลของ ${esc(c.name)}</h3><div class="row" style="flex-wrap:wrap">${r.chars.map(x=>`<button data-soc="${x.id}" class="chip ${x.id===c.id?'on':''}">${esc(x.name)}</button>`).join('')}</div>`+
+  (c.posts.length?c.posts.map(p=>`<div class="note"><b>${esc(c.name)}</b> · ${esc(p.time)}\n${esc(p.text)}\n❤️ ${+p.likes||0}</div>`).join(''):'<div class="mut">ยังไม่มีโพสต์ กดส่องได้เลย</div>')+
+  `<button class="p" id="mkpost">${c.posts.length?'🔄 ดูโพสต์ใหม่':'👀 ส่องเลย'}</button>`;
+  $('#ed').hidden=false}
+async function mkPosts(){
+  const r=cur(),c=cOf(r,soc.id);if(!sample){toast('ต้องเปิดผ่าน Claude ถึงจะส่องได้');return}
+  const b=$('#mkpost');b.disabled=true;b.textContent='กำลังส่อง… 👀';
+  try{
+    const d=await sample.json(`สร้างโพสต์โซเชียลมีเดียสมมติ 4 โพสต์ล่าสุดของตัวละคร "${c.name}" (บุคลิก: ${c.persona||'-'}; สไตล์พูด: ${c.style||'-'}) เป็นภาษาไทย สั้นๆ เหมาะกับวัยรุ่น สอดคล้องกับเรื่อง: ${r.setting||'-'}
+ความชอบที่มีต่อ ${r.me.name} = ${c.aff}/100 (สูงอาจมีโพสต์พูดถึง ${r.me.name} แบบอ้อมๆ ต่ำอาจบ่นหรือเงียบ)
+ตอบเป็น JSON array เท่านั้น เช่น [{"text":"...","time":"2 ชม.","likes":12}]
+บทสนทนาล่าสุด:
+${hist(r).slice(-1500)}`,{cache:false,modelTier:'quick'});
+    c.posts=(Array.isArray(d)?d:d.posts||[]).slice(0,5);save();
+  }catch(e){toast(EM[e&&e.code]||'ส่องไม่สำเร็จ ลองอีกครั้งนะ')}
+  soc(c.id)}
+
+/* ---------- editor ---------- */
+function editor(){
+  const r=cur();
+  $('#edbody').innerHTML=`
+  <label>ชื่อสถานการณ์<input data-k="name" value="${ea(r.name)}"></label>
+  <label>ฉาก / เหตุการณ์ (เปลี่ยนได้ตลอด)<textarea data-k="setting" rows="3" placeholder="เช่น เย็นวันเสาร์ที่บ้าน ฝนตก พ่อแม่ไม่อยู่…">${esc(r.setting)}</textarea></label>
+  <h4>🙋 โปรไฟล์ของฉัน (ในสถานการณ์นี้)</h4>
+  <div class="row"><label style="max-width:80px">อีโมจิ<input data-m="emoji" value="${ea(r.me.emoji)}"></label><label>ชื่อ<input data-m="name" value="${ea(r.me.name)}"></label></div>
+  <label>ข้อมูล/นิสัยของฉัน<textarea data-m="profile" rows="2">${esc(r.me.profile)}</textarea></label>
+  <label>รูปของฉัน<input type="file" accept="image/*" data-meimg="1"></label>${r.me.img?'<button data-nome="1">ลบรูปฉัน</button>':''}
+  <h4>🎭 ตัวละคร AI (เพิ่มได้ไม่จำกัด)</h4>
+  ${r.chars.map(c=>`<details><summary>${esc(c.emoji)} ${esc(c.name)}${c.id===r.main?' ⭐':''}</summary>
+    <div class="row"><label style="max-width:80px">อีโมจิ<input data-c="${c.id}" data-k="emoji" value="${ea(c.emoji)}"></label><label>ชื่อ<input data-c="${c.id}" data-k="name" value="${ea(c.name)}"></label><label style="max-width:70px">สี<input type="color" data-c="${c.id}" data-k="color" value="${ea(c.color)}"></label></div>
+    <label>รูปโปรไฟล์ (อัปโหลดจากเครื่อง)<input type="file" accept="image/*" data-img="${c.id}"></label>${c.img?`<button data-noimg="${c.id}">ลบรูป</button>`:''}
+    <div class="row"><label>บทบาท<select data-role="${c.id}"><option value="main" ${c.id===r.main?'selected':''}>⭐ ตัวหลัก</option><option value="side" ${c.id===r.main?'':'selected'}>ตัวรอง</option></select></label><label>เป็นอะไรกับฉัน<input data-c="${c.id}" data-k="relation" value="${ea(c.relation)}" placeholder="น้องสาว / เพื่อนสนิท"></label></div>
+    <label>เขาคิด/รู้สึกกับฉันยังไง<textarea data-c="${c.id}" data-k="feel" rows="2" placeholder="เช่น รักพี่มากแต่ขี้อายไม่กล้าบอก">${esc(c.feel)}</textarea></label>
+    <label>บุคลิก / นิสัย<textarea data-c="${c.id}" data-k="persona" rows="2">${esc(c.persona)}</textarea></label>
+    <label>สไตล์การพูด<textarea data-c="${c.id}" data-k="style" rows="2">${esc(c.style)}</textarea></label>
+    <label>การกระทำ / พฤติกรรมที่มักทำ<textarea data-c="${c.id}" data-k="habits" rows="2">${esc(c.habits)}</textarea></label>
+    <button class="d" data-del="${c.id}">ลบตัวละครนี้</button></details>`).join('')}
+  <button id="addc">＋ เพิ่มตัวละคร</button>
+  <button class="d" id="delroom">🗑 ลบสถานการณ์นี้</button>`;
+}
+$('#edbody').addEventListener('input',e=>{
+  const t=e.target,r=cur();
+  if(t.dataset.c){const c=cOf(r,t.dataset.c);if(c)c[t.dataset.k]=t.value}
+  else if(t.dataset.role){const id=t.dataset.role;r.main=t.value==='main'?id:(r.main===id?(r.chars.find(x=>x.id!==id)||{id}).id:r.main);save();editor();openC(id);return}
+  else if(t.dataset.m)r.me[t.dataset.m]=t.value;
+  else if(t.dataset.k)r[t.dataset.k]=t.value;
+  save();
+});
+$('#edbody').addEventListener('click',e=>{
+  const r=cur(),t=e.target;
+  if(t.dataset.soc){soc(t.dataset.soc);return}
+  if(t.id==='mkpost'){mkPosts();return}
+  if(t.dataset.noimg){cOf(r,t.dataset.noimg).img='';save();editor();openC(t.dataset.noimg)}
+  if(t.dataset.nome){r.me.img='';save();editor()}
+  if(t.id==='addc'){const c=mkChar();r.chars.push(c);r.sel.push(c.id);save();editor();$('#edbody').querySelectorAll('details').forEach((d,i,a)=>{if(i===a.length-1)d.open=true})}
+  if(t.dataset.del){if(r.chars.length<2){toast('ต้องมีตัวละครอย่างน้อย 1 ตัว');return}
+    if(confirm('ลบตัวละครนี้?')){r.chars=r.chars.filter(c=>c.id!==t.dataset.del);if(!cOf(r,r.main))r.main=r.chars[0].id;save();editor()}}
+  if(t.id==='delroom'&&confirm('ลบสถานการณ์นี้ทั้งหมด?')){
+    S.rooms=S.rooms.filter(x=>x!==r);if(!S.rooms.length)S.rooms.push(mkRoom());S.cur=S.rooms[0].id;save();$('#ed').hidden=true;render()}
+});
+$('#edbody').addEventListener('change',e=>{
+  const t=e.target,r=cur(),f=t.files&&t.files[0];if(!f)return;
+  shrink(f,u=>{if(t.dataset.img){cOf(r,t.dataset.img).img=u;save();editor();openC(t.dataset.img)}else if(t.dataset.meimg){r.me.img=u;save();editor()}})});
+$('#bsoc').onclick=()=>{const r=cur();if(r.bond<90){toast(`🔒 ต้องมีค่าความสัมพันธ์ถึง 90 (ตอนนี้ ${r.bond})`);return}soc(r.sel[0]||r.main)};
+const openEd=()=>{editor();$('#ed').hidden=false};
+$('#edit').onclick=openEd;
+$('#edclose').onclick=()=>{$('#ed').hidden=true;save();render()};
+
+/* ---------- wiring ---------- */
+$('#rooms').onclick=e=>{const d=e.target.closest('.room');if(d){S.cur=d.dataset.id;$('#side').classList.remove('open');save();render()}};
+$('#newRoom').onclick=()=>{const r=mkRoom();S.rooms.push(r);S.cur=r.id;save();render();$('#side').classList.remove('open');openEd()};
+$('#menu').onclick=()=>$('#side').classList.toggle('open');
+$('#chips').onclick=e=>{
+  const b=e.target.closest('.chip');if(!b)return;const r=cur(),id=b.dataset.id;
+  if(id==='*')r.sel=r.sel.length===r.chars.length?[r.chars[0].id]:r.chars.map(c=>c.id);
+  else r.sel=r.sel.includes(id)?r.sel.filter(x=>x!==id):[...r.sel,id];
+  save();renderChips();
+};
+$('#send').onclick=send;$('#talk').onclick=talk;
+$('#stop').onclick=()=>{stopFlag=true;ctl&&ctl.abort()};
+$('#tier').onchange=e=>{S.tier=e.target.value;save()};
+$('#undo').onclick=()=>{if(busy)return;cur().msgs.pop();save();render()};
+$('#regen').onclick=()=>{
+  if(busy)return;const r=cur(),l=r.msgs[r.msgs.length-1];
+  if(!l||l.role!=='ai'){toast('ยังไม่มีคำตอบของเอไอให้ตอบใหม่');return}
+  r.msgs.pop();save();render();run([l.cid],false,true);
+};
+$('#clear').onclick=()=>{if(!busy&&confirm('ล้างแชท? (ค่าความสัมพันธ์และความชอบจะรีเซ็ตด้วย)')){const r=cur();r.msgs=[];r.bond=0;r.chars.forEach(c=>c.aff=30);save();render()}};
+$('#theme').onclick=()=>{const d=document.documentElement,dark=d.dataset.theme==='dark'||(!d.dataset.theme&&matchMedia('(prefers-color-scheme:dark)').matches);d.dataset.theme=dark?'light':'dark'};
+$('#inp').addEventListener('input',e=>{const t=e.target;t.style.height='auto';t.style.height=Math.min(t.scrollHeight,160)+'px'});
+$('#inp').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();send()}});
+function wrap(a,b){const t=$('#inp'),s=t.selectionStart,e=t.selectionEnd,v=t.value;t.value=v.slice(0,s)+a+v.slice(s,e)+b+v.slice(e);t.focus();t.setSelectionRange(s+a.length,e+a.length)}
+$('#bThink').onclick=()=>wrap('(',')');
+$('#bAct').onclick=()=>wrap('**','**');
+
+load();render();
+(async()=>{
+  try{sample=window.claude?await claude.use('sample'):null}catch(e){sample=null}
+  if(!sample)toast('เปิดผ่าน Claude เพื่อคุยกับเอไอได้นะ');
+})();
+</script>
+</body>
+</html>
